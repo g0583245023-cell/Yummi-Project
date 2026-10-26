@@ -7,10 +7,14 @@ const authenticateToken = require('../middleware/authenticateToken');
 // Define the storage strategy
 const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) {
+    const isImage = file.mimetype.startsWith('image/');
+    const isLicensePdf = ['foodLicense', 'healthCertification'].includes(file.fieldname)
+        && file.mimetype === 'application/pdf';
+
+    if (isImage || isLicensePdf) {
         cb(null, true);
     } else {
-        cb(new Error('Invalid file type, only images are allowed!'), false);
+        cb(new Error('Unsupported file type for this upload field.'), false);
     }
 };
 const upload = multer({storage,fileFilter });

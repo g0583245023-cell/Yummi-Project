@@ -79,7 +79,8 @@ const RegisterForm = () => {
             navigate('/login');
         } catch (error) {
             console.error('Error registering restaurant:', error);
-            alert('Failed to register restaurant');
+            const message = error.response?.data?.msg || error.response?.data?.message || error.message;
+            alert(`Failed to register restaurant: ${message}`);
         }
     };
 
