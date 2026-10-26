@@ -3,22 +3,22 @@ const router = express.Router();
 const restaurantControllers = require('../controllers/resController');
 const multer = require('multer');
 const authenticateToken = require('../middleware/authenticateToken');
+const path = require('path');
 
 // Define the storage strategy
 const storage = multer.memoryStorage();
 const fileFilter = (req, file, cb) => {
-    const isImage = file.mimetype.startsWith('image/');
-    const isLicenseDocument = ['foodLicense', 'healthCertification'].includes(file.fieldname)
-        && [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-        ].includes(file.mimetype);
+    const extension = path.extname(file.originalname).toLowerCase();
+    const isImage = file.mimetype.startsWith('image/')
+        || ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp', '.avif'].includes(extension);
+    const isLicenseField = ['foodLicense', 'healthCertification'].includes(file.fieldname);
+    const isLicenseDocument = isLicenseField
+        && ['.pdf', '.doc', '.docx'].includes(extension);
 
     if (isImage || isLicenseDocument) {
         cb(null, true);
     } else {
-        cb(new Error('Unsupported file type for this upload field.'), false);
+        cb(new Error(`Unsupported file type "${file.mimetype || 'unknown'}" for field "${file.fieldname}" (extension "${extension || 'none'}").`), false);
     }
 };
 const upload = multer({storage,fileFilter });
