@@ -22,6 +22,10 @@ const RegisterForm = () => {
 
     const navigate = useNavigate();
 
+    const isImageFile = (file) => file && (
+        file.type.startsWith('image/') || /\.(jpe?g|png|gif|webp|bmp|avif)$/i.test(file.name)
+    );
+
     const addMenuItem = () => {
         setMenuItems([...menuItems, { name: '', price: '', category: '', description: '', foodType: '', image: null }]);
     };
@@ -39,6 +43,27 @@ const RegisterForm = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!isImageFile(logo)) {
+            alert('Please choose an image file for the restaurant logo.');
+            return;
+        }
+
+        if (menuItems.some((item) => !isImageFile(item.image))) {
+            alert('Please choose an image file for each menu item.');
+            return;
+        }
+
+        const isLicenseDocument = (file) => file && /\.(pdf|docx?)$/i.test(file.name);
+        if (!isLicenseDocument(foodLicense)) {
+            alert('Please choose a PDF, DOC, or DOCX file for the food business license.');
+            return;
+        }
+
+        if (healthCertification && !isLicenseDocument(healthCertification)) {
+            alert('Please choose a PDF, DOC, or DOCX file for the health certification.');
+            return;
+        }
 
         for (let i = 0; i < menuItems.length; i++) {
             const item = menuItems[i];
@@ -203,7 +228,7 @@ const RegisterForm = () => {
                                 </div>
                                 <div>
                                     <label>Upload Image:</label>
-                                    <input type="file" name="image" onChange={(e) => handleMenuItemChange(index, e)} required />
+                                    <input type="file" name="image" accept="image/*" onChange={(e) => handleMenuItemChange(index, e)} required />
                                 </div>
                             </div>
                         ))}
@@ -219,7 +244,7 @@ const RegisterForm = () => {
                         </div>
                         <div>
                             <label>Upload Logo:</label>
-                            <input type="file" onChange={(e) => setLogo(e.target.files[0])} required />
+                            <input type="file" accept="image/*" onChange={(e) => setLogo(e.target.files[0])} required />
                         </div>
                     </div>
 
@@ -227,11 +252,11 @@ const RegisterForm = () => {
                         <h2>Licenses and Certifications</h2>
                         <div>
                             <label>Food Business License:</label>
-                            <input type="file" onChange={(e) => setFoodLicense(e.target.files[0])} required />
+                            <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setFoodLicense(e.target.files[0])} required />
                         </div>
                         <div>
                             <label>Health and Safety Certification:</label>
-                            <input type="file" onChange={(e) => setHealthCertification(e.target.files[0])} />
+                            <input type="file" accept=".pdf,.doc,.docx" onChange={(e) => setHealthCertification(e.target.files[0])} />
                         </div>
                     </div>
 
