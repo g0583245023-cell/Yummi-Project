@@ -1,0 +1,10 @@
+.git
+.env
+.env.*
+!.env.example
+**/node_modules
+**/build
+**/coverage
+**/reports
+**/mocha-test-results.xml
+**/npm-debug.log*
