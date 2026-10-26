@@ -75,7 +75,7 @@ services:
         REACT_APP_BACKEND_URL: /api
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "${FRONTEND_PORT:-3000}:80"
     depends_on:
       backend:
         condition: service_healthy
