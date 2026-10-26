@@ -1,0 +1,12 @@
+.env
+.env.*
+!.env.example
+/env
+
+**/node_modules/
+frontend/build/
+backend/coverage/
+backend/reports/
+backend/mocha-test-results.xml
+
+npm-debug.log*
