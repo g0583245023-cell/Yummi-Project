@@ -9,13 +9,15 @@ redisClient.on("error", (err) => {
   console.error("❌ Redis Error:", err);
 });
 
-(async () => {
-  try {
-    await redisClient.connect();
-    console.log("✅ Connected to Redis (Cloud)");
-  } catch (err) {
-    console.error("❌ Redis connection failed:", err);
-  }
-})();
+if (process.env.NODE_ENV !== "test") {
+  (async () => {
+    try {
+      await redisClient.connect();
+      console.log("✅ Connected to Redis (Cloud)");
+    } catch (err) {
+      console.error("❌ Redis connection failed:", err);
+    }
+  })();
+}
 
 module.exports = redisClient;
