@@ -1,13 +1,16 @@
 {
-  "name": "backend",
+  "name": "yummi-project",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "build": "node --check app.js && node --check ../../backend/app.js",
-    "start": "node server.js",
-    "test": "jest --runInBand app.test.js",
-    "test:ci": "mkdir -p reports && nyc --report-dir=coverage --reporter=lcov --reporter=text mocha tests --exit --reporter mocha-junit-reporter --reporter-options mochaFile=mocha-test-results.xml"
+    "build": "node --check app.js",
+    "test": "jest --runInBand"
+  },
+  "jest": {
+    "testMatch": [
+      "<rootDir>/app.test.js"
+    ]
   },
   "keywords": [],
   "author": "",
