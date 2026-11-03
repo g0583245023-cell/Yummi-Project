@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "node --check app.js && node --check ../backend/app.js",
+    "build": "node --check app.js && node --check ../../backend/app.js",
     "start": "node server.js",
     "test": "jest --runInBand app.test.js",
     "test:ci": "mkdir -p reports && nyc --report-dir=coverage --reporter=lcov --reporter=text mocha tests --exit --reporter mocha-junit-reporter --reporter-options mochaFile=mocha-test-results.xml"

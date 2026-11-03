@@ -20,16 +20,16 @@ jobs:
           cache: npm
           cache-dependency-path: |
             backend/package-lock.json
-            ci/package-lock.json
+            .github/workflows/package-lock.json
 
       - name: Install backend dependencies
         run: npm ci --prefix backend
 
       - name: Install CI dependencies
-        run: npm ci --prefix ci
+        run: npm ci --prefix .github/workflows
 
       - name: Build
-        run: npm run build --prefix ci
+        run: npm run build --prefix .github/workflows
 
       - name: Test
-        run: npm test --prefix ci
+        run: npm test --prefix .github/workflows
