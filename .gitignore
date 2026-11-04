@@ -1,7 +1,8 @@
 .env
 .env.*
 !.env.example
-/env
+!frontend/.env.production
+/env/*.env
 
 **/node_modules/
 frontend/build/

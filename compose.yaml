@@ -2,12 +2,8 @@ services:
   mongodb:
     image: mongo:7.0
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:?Set MONGO_ROOT_USERNAME in .env}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:?Set MONGO_ROOT_PASSWORD in .env}
-      MONGO_APP_USERNAME: ${MONGO_APP_USERNAME:?Set MONGO_APP_USERNAME in .env}
-      MONGO_APP_PASSWORD: ${MONGO_APP_PASSWORD:?Set MONGO_APP_PASSWORD in .env}
-      MONGO_INITDB_DATABASE: yummi
+    env_file:
+      - ./env/mongodb.env
     volumes:
       - mongo_data:/data/db
       - ./mongo-init/01-create-app-user.js:/docker-entrypoint-initdb.d/01-create-app-user.js:ro
@@ -24,9 +20,8 @@ services:
   redis:
     image: redis:7-alpine
     restart: unless-stopped
-    environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
-      REDISCLI_AUTH: ${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}
+    env_file:
+      - ./env/redis.env
     command: ["sh", "-c", "exec redis-server --appendonly yes --requirepass \"$${REDIS_PASSWORD}\""]
     volumes:
       - redis_data:/data
@@ -41,13 +36,8 @@ services:
   backend:
     build: ./backend
     restart: unless-stopped
-    environment:
-      NODE_ENV: production
-      PORT: 5000
-      MONGO_URI: mongodb://${MONGO_APP_USERNAME}:${MONGO_APP_PASSWORD}@mongodb:27017/yummi?authSource=yummi
-      REDIS_URL: redis://:${REDIS_PASSWORD}@redis:6379
-      JWT_SECRET: ${JWT_SECRET:?Set JWT_SECRET in .env}
-      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN:-http://localhost:8080}
+    env_file:
+      - ./env/backend.env
     depends_on:
       mongodb:
         condition: service_healthy
@@ -61,7 +51,7 @@ services:
         - CMD
         - node
         - -e
-        - fetch('http://127.0.0.1:5000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+        - fetch('http://127.0.0.1:'+process.env.PORT+'/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
       interval: 30s
       timeout: 5s
       retries: 3
@@ -71,18 +61,16 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-      args:
-        REACT_APP_BACKEND_URL: /api
     restart: unless-stopped
     ports:
-      - "${FRONTEND_PORT:-3000}:80"
+      - "8080:8080"
     depends_on:
       backend:
         condition: service_healthy
     networks:
       - frontend_network
     healthcheck:
-      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1/ || exit 1"]
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/ || exit 1"]
       interval: 30s
       timeout: 5s
       retries: 3
